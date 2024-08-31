@@ -24,12 +24,8 @@ class Cache:
     def get(self, key: str, fn: Callable = None):
         """Read key from store and return data in specific format"""
         data = self._redis.get(key)
-        if not data:
-            return
-        if not fn and isinstance(data, str):
-            fn = self.get_int
-        elif not fn:
-            fn = self.get_str
+        if fn is None or not data:
+            return data
         return fn(data)
 
     def get_str(self, data: bytes) -> str:
