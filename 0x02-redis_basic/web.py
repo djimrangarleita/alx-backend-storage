@@ -22,6 +22,7 @@ def cache_url_access(fn: Callable) -> Callable:
         return html_data
     return wrapper
 
+
 @cache_url_access
 def get_page(url: str) -> str:
     """Request a web page and store it's result with an expiration date"""
