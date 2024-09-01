@@ -16,7 +16,9 @@ def replay(method: Callable):
     outputs = instance._redis.lrange("{}:outputs".format(key), 0, -1)
     print("{} was called {} times".format(key, len(inputs)))
     for i, o in zip(inputs, outputs):
-        print("{} -> {}".format(i, o))
+        print("{}(*{}) -> {}".format(key,
+                                     i.decode('utf-8'),
+                                     o.decode('utf-8')))
 
 
 def call_history(method: Callable) -> Callable:
