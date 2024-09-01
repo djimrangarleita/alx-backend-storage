@@ -4,9 +4,10 @@
 import requests
 import redis
 from functools import wraps
+from typing import Callable
 
 
-def cache_url_access(fn):
+def cache_url_access(fn: Callable) -> Callable:
     """Decorator used to cache html page and count url read"""
     rstore = redis.Redis()
 
@@ -24,9 +25,14 @@ def cache_url_access(fn):
     return wrapper
 
 
-@cache_url_access
 def get_page(url: str) -> str:
     """Request a web page and store it's result with an expiration date"""
+    rstore = redis.Redis()
+    rstore.incr("count:{}".format(url))
+    data = rstore.get(url)
+    if data:
+        return data.decode('utf-8')
     r = requests.get(url)
     html_data = r.text
+    rstore.set(url, html_data, 10)
     return html_data
