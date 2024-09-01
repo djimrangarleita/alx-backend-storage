@@ -20,7 +20,7 @@ def cache_url_access(fn: Callable) -> Callable:
         if data:
             return data.decode('utf-8')
         data = fn(*args)
-        rstore.set(page_key, data, 10)
+        rstore.set(page_key, data, ex=10)
         return data
     return wrapper
 
@@ -34,5 +34,5 @@ def get_page(url: str) -> str:
         return data.decode('utf-8')
     r = requests.get(url)
     html_data = r.text
-    rstore.set(url, html_data, 10)
+    rstore.set(url, html_data, ex=10)
     return html_data
