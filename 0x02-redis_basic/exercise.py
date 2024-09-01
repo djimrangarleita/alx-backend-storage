@@ -14,7 +14,7 @@ def replay(method: Callable):
     instance = method.__self__
     inputs = instance._redis.lrange("{}:inputs".format(key), 0, -1)
     outputs = instance._redis.lrange("{}:outputs".format(key), 0, -1)
-    print("{} was called {} times".format(key, len(inputs)))
+    print("{} was called {} times:".format(key, len(inputs)))
     for i, o in zip(inputs, outputs):
         print("{}(*{}) -> {}".format(key,
                                      i.decode('utf-8'),
