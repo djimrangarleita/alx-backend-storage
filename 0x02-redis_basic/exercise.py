@@ -8,6 +8,17 @@ from typing import Callable, Union
 from functools import wraps
 
 
+def replay(method: Callable):
+    """Display history of function call"""
+    key: str = method.__qualname__
+    instance = method.__self__
+    inputs = instance._redis.lrange("{}:inputs".format(key), 0, -1)
+    outputs = instance._redis.lrange("{}:outputs".format(key), 0, -1)
+    print("{} was called {} times".format(key, len(inputs)))
+    for i, o in zip(inputs, outputs):
+        print("{} -> {}".format(i, o))
+
+
 def call_history(method: Callable) -> Callable:
     """Decorate some methods and keeps their call history"""
     key: str = method.__qualname__
@@ -64,12 +75,3 @@ class Cache:
     def get_int(self, data) -> int:
         """Parameterize get for int conversion"""
         return int(data)
-
-    def replay(self, method: Callable):
-        """Display history of function call"""
-        key: str = method.__qualname__
-        inputs = self._redis.lrange("{}:inputs".format(key), 0, -1)
-        outputs = self._redis.lrange("{}:outputs".format(key), 0, -1)
-        print("{} was called {} times".format(key, len(inputs)))
-        for i, o in zip(inputs, outputs):
-            print("{} -> {}".format(i, o))
